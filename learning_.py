@@ -52,11 +52,11 @@ X_test_std = scaler.transform(X_test)
 
 from sklearn.neural_network import MLPClassifier
 
-clf = MLPClassifier(hidden_layer_sizes = (20,20,20), learning_rate_init = 0.0001, max_iter = 200000, momentum = 0.5)
+# clf = MLPClassifier(hidden_layer_sizes = (20,20,20), learning_rate_init = 0.0001, max_iter = 20000, momentum = 0.5)
 
 from sklearn.tree import DecisionTreeClassifier
 
-# clf = DecisionTreeClassifier(criterion = 'gini', max_depth = 25, random_state = 42)
+clf = DecisionTreeClassifier(criterion = 'gini', max_depth = 30, random_state = 42)
 
 # clf = SVC(C=1.0000, gamma=0.10000, max_iter=100)
 
@@ -71,7 +71,21 @@ print(confusion_matrix(y_test, predictions))
 print("\nAcurracy")
 print(accuracy_score(y_test, predictions))
 
-df_ = pd.DataFrame()
-df_['y_test'] = y_test
-df_['predictions'] = predictions
-print(df_)
+import pickle
+
+filename = 'clf.pk'
+pickle.dump(clf, open(filename, 'wb'))
+ 
+# some time later...
+
+with open('clf.pk', 'rb') as fin:
+    clf = pickle.load(fin)
+
+predicted = clf.predict(X_test_std)
+
+result = accuracy_score(y_test, predicted)
+print("\npickle : " + str(result))
+
+# 임의의 input 값 예측
+predict_result = clf.predict(np.array( [[275,185,113],] ))
+print("\n" + str(predict_result[0]))
